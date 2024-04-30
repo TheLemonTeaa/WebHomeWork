@@ -338,7 +338,8 @@ import axios from 'axios';
             className:this.formInline.className
           }
         }).then((result) =>{
-          this.tableData = result.data.data.result
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else this.tableData = result.data.data.result
         })
       },
       handleSelectionChange(selection) {
@@ -350,7 +351,9 @@ import axios from 'axios';
       delMutiple() {
         const apiUrl = "/api/stu/"
         console.log(apiUrl + this.mutipleSelection)
-        axios.delete(apiUrl + this.mutipleSelection).then(() => {
+        axios.delete(apiUrl + this.mutipleSelection).then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else {
           axios.get("/api/stu",{
             params:{
               page:this.page,
@@ -360,6 +363,7 @@ import axios from 'axios';
             this.tableData=result.data.data.result;
           })
           this.$message.success("删除成功！");
+          }
         }).catch(() => {
           this.$message.error("删除失败！");
         })
@@ -431,7 +435,9 @@ import axios from 'axios';
           this.$message.error("请选择所属班级!")
           return;
         }
-        axios.post("/api/stu",this.saveData).then(() => {
+        axios.post("/api/stu",this.saveData).then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else {
           this.dialogAddVisible = false;
           axios.get("/api/stu",{
             params:{
@@ -442,6 +448,7 @@ import axios from 'axios';
             this.tableData=result.data.data.result,
             this.total = result.data.data.total
           })
+          }
           this.saveData={
             studentName:'',
             studentID:'',
@@ -603,8 +610,11 @@ import axios from 'axios';
           pageSize:this.pageSize
         }
       }).then((result) => {
+        if(result.data.code == 0) this.$message.error("请登录后操作!");
+        else {
         this.tableData = result.data.data.result,
         this.total = result.data.data.total
+        }
       }),
       axios.get("/api/class/all").then((result) => {
         this.classData = result.data.data;

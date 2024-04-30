@@ -198,7 +198,8 @@ export default {
             className:this.searchForm.className,
           }
         }).then((result) => {
-          this.tableData=result.data.data.result;
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else this.tableData=result.data.data.result;
         })
         }
         else axios.get("/api/class",{
@@ -210,7 +211,8 @@ export default {
             end:this.searchForm.date[1]
           }
         }).then((result) => {
-          this.tableData=result.data.data.result;
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else this.tableData=result.data.data.result;
         })
       },
       add() {
@@ -250,7 +252,8 @@ export default {
                 pageSize:this.pageSize
               }
           }).then((result) => {
-            this.tableData = result.data.data.result;
+            if(result.data.code == 0) this.$message.error("请登录后操作!");
+            else this.tableData = result.data.data.result;
           })
           this.dialogAddVisible = false;
         }).catch(() => {
@@ -373,8 +376,10 @@ export default {
             pageSize:this.pageSize
           }
       }).then((result) => {
-        this.tableData = result.data.data.result;
-        this.total = result.data.data.total
+        if(result.data.code == 0) this.$message.error("请登录后操作!");
+        else {
+          this.tableData = result.data.data.result;
+          this.total = result.data.data.total}
       }),
       axios.get("/api/emps/job",{
         params:{

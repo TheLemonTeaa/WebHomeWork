@@ -9,8 +9,11 @@ const routes = [
     component: () => import('../views/LoginView.vue')
   },
   {
+    path:'/updatePassword',
+    component: () => import('../views/UpdatePasswordView.vue')
+  },
+  {
     path: '/',
-    name: 'home',
     component: () => import('../views/LayoutView.vue'),
     children:[
       {
@@ -37,6 +40,10 @@ const routes = [
         path:'graph',
         component: () => import('../views/GraphView.vue')
       },
+      {
+        path:'demo',
+        component: () => import('../views/DemoVue.vue')
+      }
     ]
   },
 ]

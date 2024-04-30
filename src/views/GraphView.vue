@@ -48,6 +48,8 @@ export default {
         gender:1
       }
     }).then((result) => {
+      if(result.data.code == 0) this.$message.error("请登录后操作!");
+      else{
       this.man = result.data.data.total
       axios.get("/api/emps",{
       params:{
@@ -56,13 +58,14 @@ export default {
       }).then((result) => {
         this.woman = result.data.data.total
         this.drawGender()
-      })
+      })}
     })
     axios.get("/api/emps/job",{
       params:{
         job:1
       }
     }).then((result) =>{
+      if(result.data.code == 1) {
       this.empData = result.data.data
       this.job1 = this.empData.length
       axios.get("/api/emps/job",{
@@ -98,6 +101,7 @@ export default {
           })
         })
       })
+    }
     })
   },
   methods: {

@@ -110,7 +110,9 @@ export default {
           return;
         }
         axios.post("/api/depts",this.saveData)
-        .then(() => {
+        .then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else{
           this.$message({
             type:'success',
             message:'添加成功！'
@@ -120,6 +122,7 @@ export default {
             this.tableData = result.data.data;
           })
           this.saveData.name = '';
+          }
         }).catch(() => {
           this.$message.error('部门添加失败，请重试！');
           this.dialogAddVisible = false;
@@ -185,7 +188,8 @@ export default {
     },
     mounted() {
       axios.get("/api/depts").then((result) => {
-        this.tableData = result.data.data;
+        if(result.data.code == 0) this.$message.error("请登录后操作!");
+        else this.tableData = result.data.data;
       })
     },
 }

@@ -287,7 +287,9 @@ export default {
           this.$message.error("请选择性别!")
           return;
         }
-        axios.post("/api/emps",this.saveData).then(() => {
+        axios.post("/api/emps",this.saveData).then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else{
           this.dialogAddVisible = false;
           axios.get("/api/emps",{
             params:{
@@ -307,7 +309,7 @@ export default {
             image:'',
             entrydate:null
           }
-          this.$message.success("添加成功!")
+          this.$message.success("添加成功!")}
         }).catch(() => {
           this.$message.error("添加失败!")
         })
@@ -412,7 +414,9 @@ export default {
       delMutiple() {
         const apiUrl = "/api/emps/"
         console.log(apiUrl + this.mutipleSelection)
-        axios.delete(apiUrl + this.mutipleSelection).then(() => {
+        axios.delete(apiUrl + this.mutipleSelection).then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else{
           axios.get("/api/emps",{
             params:{
               page:this.page,
@@ -421,7 +425,7 @@ export default {
           }).then((result) => {
             this.tableData=result.data.data.result;
           })
-          this.$message.success("删除成功！");
+          this.$message.success("删除成功！");}
         }).catch(() => {
           this.$message.error("删除失败！");
         })
@@ -436,7 +440,8 @@ export default {
             gender:this.searchForm.gender,
           }
         }).then((result) => {
-          this.tableData=result.data.data.result;
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else this.tableData=result.data.data.result;
         })
         }
         else axios.get("/api/emps",{
@@ -449,7 +454,8 @@ export default {
             end:this.searchForm.entrydate[1]
           }
         }).then((result) => {
-          this.tableData=result.data.data.result;
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else this.tableData=result.data.data.result;
         })
       },
       jobHandle(job) {
@@ -539,11 +545,14 @@ export default {
             pageSize:this.pageSize
           }
         }).then((result) => {
+          if(result.data.code == 0) this.$message.error("请登录后操作!");
+          else {
           this.tableData=result.data.data.result;
           this.total=result.data.data.total
+          }
         })
     axios.get("/api/depts").then(result =>{
-      this.deptData = result.data.data;
+      if(result.data.code == 1)this.deptData = result.data.data;
     })
   }
 }

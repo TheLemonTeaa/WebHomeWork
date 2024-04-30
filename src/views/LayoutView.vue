@@ -2,8 +2,8 @@
   <div>
     <el-container>
         <el-header style="text-align: right; font-size: 12px;">
-          <el-button icon="el-icon-edit" style="background-color: rgba(70, 76, 91, 1); color: #fff;">修改密码</el-button>
-          <el-button icon="el-icon-switch-button" style="background-color: rgba(70, 76, 91, 1); color: #fff;">退出登陆</el-button>
+          <el-button @click="updatePassword()" icon="el-icon-edit" style="background-color: rgba(70, 76, 91, 1); color: #fff;">修改密码</el-button>
+          <el-button @click="quit()" icon="el-icon-switch-button" style="background-color: rgba(70, 76, 91, 1); color: #fff;">退出登陆</el-button>
         </el-header>
       <el-container>
         <el-aside width="200px" style="background-color: #fff">
@@ -42,7 +42,29 @@
 
 <script>
 export default {
- 
+  methods: {
+    updatePassword() {
+      this.$router.push('/updatePassword')
+    },
+    quit() {
+      this.$confirm('确认退出吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        });
+        localStorage.removeItem('token')
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消退出'
+        });
+      });
+    }
+  }
 }
 </script>
 
