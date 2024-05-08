@@ -25,11 +25,23 @@
             </el-submenu>
 
             <el-submenu index="3">
-              <template slot="title"><i class="el-icon-data-analysis"></i>数据统计管理</template>
+              <template slot="title"><i class="el-icon-notebook-1"></i>课程教务管理</template>
               <el-menu-item-group>
-                <el-menu-item index="graph">员工信息统计</el-menu-item>
+                <el-menu-item index="course">课程管理</el-menu-item>
+                <el-menu-item index="plan">课程安排</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            
+            <el-submenu index="4">
+              <template slot="title"><i class="el-icon-data-analysis"></i>数据统计管理</template>
+              <el-menu-item-group>
+                <el-menu-item index="empGraph">员工信息统计</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group>
+                <el-menu-item index="stuGraph">学员信息统计</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+
           </el-menu>
         </el-aside>
         <el-main>
@@ -64,7 +76,22 @@ export default {
         });
       });
     }
-  }
+  },
+  mounted() {
+    if(localStorage.getItem('token') != null) {
+      axios.interceptors.request.use(config => {
+          // 在发送请求之前做些什么
+          config.headers['token'] = localStorage.getItem('token');
+          return config;
+        }, error => {
+          // 对请求错误做些什么
+          return Promise.reject(error);
+        });
+    }
+    else {
+      this.$router.push('/login')
+    }
+  },
 }
 </script>
 

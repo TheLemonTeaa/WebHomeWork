@@ -37,12 +37,20 @@ const routes = [
         component: () => import('../views/DeptView.vue')
       },
       {
-        path:'graph',
-        component: () => import('../views/GraphView.vue')
+        path:'empGraph',
+        component: () => import('../views/EmpGraphView.vue')
       },
       {
-        path:'demo',
-        component: () => import('../views/DemoVue.vue')
+        path:'stuGraph',
+        component: () => import('../views/StuGraphView.vue')
+      },
+      {
+        path:'course',
+        component: () => import('../views/CourseView.vue')
+      },
+      {
+        path:'plan',
+        component: () => import('../views/PlanView.vue')
       }
     ]
   },

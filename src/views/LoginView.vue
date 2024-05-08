@@ -61,7 +61,8 @@ export default {
             // 对请求错误做些什么
             return Promise.reject(error);
           });
-          this.$router.push('/')
+          this.$router.push('/');
+          this.$message.success('登录成功!')
         } else {
           this.$message.error('用户名或密码错误！')
         }

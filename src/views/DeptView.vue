@@ -187,6 +187,16 @@ export default {
       },
     },
     mounted() {
+      if(localStorage.getItem('token') != null) {
+        axios.interceptors.request.use(config => {
+            // 在发送请求之前做些什么
+            config.headers['token'] = localStorage.getItem('token');
+            return config;
+          }, error => {
+            // 对请求错误做些什么
+            return Promise.reject(error);
+          });
+      }
       axios.get("/api/depts").then((result) => {
         if(result.data.code == 0) this.$message.error("请登录后操作!");
         else this.tableData = result.data.data;

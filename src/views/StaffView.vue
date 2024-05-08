@@ -203,7 +203,7 @@ export default {
       tableData:[],
       page:'',
       pageSize:'',
-      tatal:'',
+      total:'',
       searchForm:{
         name:'',
         gender:'',
@@ -440,8 +440,12 @@ export default {
             gender:this.searchForm.gender,
           }
         }).then((result) => {
+          this.page = "1";
           if(result.data.code == 0) this.$message.error("请登录后操作!");
-          else this.tableData=result.data.data.result;
+          else {
+            this.tableData=result.data.data.result;
+            this.total = result.data.data.total;
+          }
         })
         }
         else axios.get("/api/emps",{
@@ -454,8 +458,12 @@ export default {
             end:this.searchForm.entrydate[1]
           }
         }).then((result) => {
+          this.page = "1";
           if(result.data.code == 0) this.$message.error("请登录后操作!");
-          else this.tableData=result.data.data.result;
+          else {
+            this.tableData=result.data.data.result;
+            this.total = result.data.data.total;
+          }
         })
       },
       jobHandle(job) {
@@ -526,19 +534,29 @@ export default {
         this.updateData.image=res.data;
       },
       beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
+        const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
         const isLt2M = file.size / 1024 / 1024 < 2;
 
         if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
+          this.$message.error('格式错误，上传失败');
         }
         if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
+          this.$message.error('图片过大，上传失败');
         }
         return isJPG && isLt2M;
       }
     },
   mounted (){
+    if(localStorage.getItem('token') != null) {
+        axios.interceptors.request.use(config => {
+            // 在发送请求之前做些什么
+            config.headers['token'] = localStorage.getItem('token');
+            return config;
+          }, error => {
+            // 对请求错误做些什么
+            return Promise.reject(error);
+          });
+    }
     axios.get("/api/emps",{
           params:{
             page:this.page,

@@ -338,8 +338,12 @@ import axios from 'axios';
             className:this.formInline.className
           }
         }).then((result) =>{
+          this.page = "1";
           if(result.data.code == 0) this.$message.error("请登录后操作!");
-          else this.tableData = result.data.data.result
+          else {
+            this.tableData = result.data.data.result
+            this.total = result.data.data.total
+          }
         })
       },
       handleSelectionChange(selection) {
