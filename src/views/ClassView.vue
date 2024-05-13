@@ -69,7 +69,11 @@
         <el-table-column prop="classroom" label="班级教室" width="127"></el-table-column>
         <el-table-column prop="startTime" label="开课时间" width="153"></el-table-column>
         <el-table-column prop="endTime" label="结课时间" width="172"></el-table-column>
-        <el-table-column prop="teacher" label="班主任" width="130"></el-table-column>
+        <el-table-column prop="teacher" label="班主任" width="130">
+          <template slot-scope="scope">
+            {{ teacherHandle(scope.row.teacher) }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="edit(scope.row.id)">编辑</el-button>
@@ -161,7 +165,20 @@ export default {
     }
   },
   methods: {
-    handleSizeChange(val) {
+      teacherHandle(id) {
+        if(id != null) {
+          const teacherName = this.teacherData.find(teach => teach.id == id);
+          if(teacherName) return teacherName.name;
+          else return "未知";
+        }
+      },
+      toTeacher(){
+        if(this.updateData.teacher != ''){
+          const teacherId = this.teacherData.find(teach => teach.name == this.updateData.teacher);
+          if(teacherId) this.updateData.teacher = teacherId.id;
+        }
+      },
+      handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.page = "1";
@@ -250,6 +267,10 @@ export default {
           this.$message.error("请选择班主任!")
           return;
         }
+        else if (this.saveData.startTime > this.saveData.endTime) {
+          this.$message.error("开课时间不能晚于结课时间!");
+          return;
+        }
         axios.post("/api/class",this.saveData).then(() =>{
           this.$message.success("添加成功!");
           axios.get("/api/class",{
@@ -269,6 +290,7 @@ export default {
       edit(id) {
         axios.get("/api/class/" + id).then((result) => {
           this.updateData = result.data.data;
+          this.updateData.teacher = this.teacherHandle(this.updateData.teacher);
           this.dialogEditVisible = true;
         }).catch(() => {
           this.$message.error("获取班级信息失败!")
@@ -302,6 +324,11 @@ export default {
           this.$message.error("请选择班主任!")
           return;
         }
+        else if (this.saveData.startTime > this.saveData.endTime) {
+          this.$message.error("开课时间不能晚于结课时间!");
+          return;
+        }
+        this.toTeacher();
         axios.put("/api/class",this.updateData).then(() =>{
           this.$message.success("保存成功!"),
           this.dialogEditVisible = false,
@@ -312,14 +339,14 @@ export default {
               }
           }).then((result) => {
             this.tableData = result.data.data.result;
+            this.updateData = {
+              className:'',
+              classroom:'',
+              startTime:'',
+              endTime:'',
+              teacher:''
+            }
           })
-          this.updateData = {
-            className:'',
-            classroom:'',
-            startTime:'',
-            endTime:'',
-            teacher:''
-          }
         }).catch(() => {
           this.$message.error("编辑失败!")
         })

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span style="font-family: 'Arial Normal',Arial; color: #02A7F0; text-align: left;">班级管理</span><br/><br/><br/>
+        <span style="font-family: 'Arial Normal',Arial; color: #02A7F0; text-align: left;">课程安排</span><br/><br/><br/>
         <el-form :inline="true" :model="searchForm" plan="demo-form-inline">
             <el-form-item label="课程名称">
                 <el-input v-model="searchForm.courseName" placeholder="请输入课程名称"></el-input>
@@ -69,7 +69,7 @@
         </el-table-column>
         </el-table>
         <el-dialog :visible.sync="dialogEditVisible" center>
-          <span style="font-size: large;font-family: 'Arial Normal',Arial; color: #02A7F0; text-align: left;">修改班级</span><br/><br/><br/>
+          <span style="font-size: large;font-family: 'Arial Normal',Arial; color: #02A7F0; text-align: left;">修改安排</span><br/><br/><br/>
           <div>
           <el-form :model="form">
             <el-form-item label="课程名称">
@@ -150,99 +150,150 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.pageSize = val;
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.page = "1";
+      axios.get("/api/plan",{
+        params:{
+          page:this.page,
+          pageSize:this.pageSize
+        }
+      }).then((result) => {
+        this.tableData=result.data.data.result;
+      })
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.page = val;
+      axios.get("/api/plan",{
+        params:{
+          page:this.page,
+          pageSize:this.pageSize
+        }
+      }).then((result) => {
+        this.tableData=result.data.data.result;
+      })
+    },
+    cellStyle(){
+      return 'text-align:center'
+    },
+    onSubmit() {
+        axios.get("/api/plan",{
+        params:{
+          page:this.page,
+          pageSize:this.pageSize,
+          courseName:this.searchForm.courseName,
+          teacher:this.searchForm.teacher
+        }
+      }).then((result) => {
         this.page = "1";
+        if(result.data.code == 0) this.$message.error("请登录后操作!");
+        else {
+          this.tableData=result.data.data.result;
+          this.total = result.data.data.total
+        }
+      })
+      
+    },
+    add() {
+      console.log(this.teacherData)
+      const emptyReg = /^$/;
+      if(emptyReg.test(this.saveData.courseName)){
+        this.$message.error("请选择课程!")
+        return;
+      }
+      else if(emptyReg.test(this.saveData.teacher)){
+        this.$message.error("请选择任课教师!")
+        return;
+      }
+      axios.post("/api/plan",this.saveData).then(() =>{
+        this.$message.success("添加成功!");
+        this.saveData={
+          courseName:'',
+          courseRoom:'',
+          teacher:''
+        },
         axios.get("/api/plan",{
           params:{
-            page:this.page,
-            pageSize:this.pageSize
-          }
+              page:this.page,
+              pageSize:this.pageSize
+            }
         }).then((result) => {
-          this.tableData=result.data.data.result;
-        })
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        this.page = val;
-        axios.get("/api/plan",{
-          params:{
-            page:this.page,
-            pageSize:this.pageSize
-          }
-        }).then((result) => {
-          this.tableData=result.data.data.result;
-        })
-      },
-      cellStyle(){
-        return 'text-align:center'
-      },
-      onSubmit() {
-          axios.get("/api/plan",{
-          params:{
-            page:this.page,
-            pageSize:this.pageSize,
-            courseName:this.searchForm.courseName,
-            teacher:this.searchForm.teacher
-          }
-        }).then((result) => {
-          this.page = "1";
           if(result.data.code == 0) this.$message.error("请登录后操作!");
-          else {
-            this.tableData=result.data.data.result;
-            this.total = result.data.data.total
-          }
+          else this.tableData = result.data.data.result;
         })
-        
-      },
-      add() {
-        console.log(this.teacherData)
-        const emptyReg = /^$/;
-        if(emptyReg.test(this.saveData.courseName)){
-          this.$message.error("请选择课程!")
-          return;
+        this.dialogAddVisible = false;
+      }).catch(() => {
+        this.$message.error("添加失败!")
+      })
+    },
+    edit(id) {
+      axios.get("/api/plan/" + id).then((result) => {
+        this.updateData = result.data.data;
+        this.dialogEditVisible = true;
+      }).catch(() => {
+        this.$message.error("获取安排信息失败!")
+      })
+    },
+    update(){
+      const emptyReg = /^$/;
+      if(emptyReg.test(this.updateData.courseName)) {
+        this.$message.error("请选择课程!");
+        return;
+      }
+      else if(emptyReg.test(this.updateData.teacher)){
+        this.$message.error("请选择任课教师!")
+        return;
+      }
+      axios.put("/api/plan",this.updateData).then(() =>{
+        this.$message.success("保存成功!"),
+        this.dialogEditVisible = false,
+        axios.get("/api/plan",{
+          params:{
+              page:this.page,
+              pageSize:this.pageSize
+            }
+        }).then((result) => {
+          this.tableData = result.data.data.result;
+        })
+        this.updateData = {
+          courseName:'',
+          teacher:''
         }
-        else if(emptyReg.test(this.saveData.teacher)){
-          this.$message.error("请选择任课教师!")
-          return;
+      }).catch(() => {
+        this.$message.error("编辑失败!")
+      })
+      
+    },
+    cancel() {
+      if(this.dialogEditVisible == true) {
+        this.dialogEditVisible = false;
+        this.updateData={
+          courseName:'',
+          courseRoom:'',
+          teacher:''
         }
-        axios.post("/api/plan",this.saveData).then(() =>{
-          this.$message.success("添加成功!");
-          axios.get("/api/plan",{
-            params:{
-                page:this.page,
-                pageSize:this.pageSize
-              }
-          }).then((result) => {
-            if(result.data.code == 0) this.$message.error("请登录后操作!");
-            else this.tableData = result.data.data.result;
+      }
+      else if(this.dialogAddVisible == true) {
+        this.dialogAddVisible = false;
+        this.saveData={
+          courseName:'',
+          courseRoom:'',
+          teacher:''
+        }
+      }
+    },
+    del(id){
+      this.$confirm('您确定要删除该安排吗?', '删除安排', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.delete("/api/plan/" + id).then(() => {
+          this.$message({
+          type: 'success',
+          message: '删除成功!'
           })
-          this.dialogAddVisible = false;
-        }).catch(() => {
-          this.$message.error("添加失败!")
-        })
-      },
-      edit(id) {
-        axios.get("/api/plan/" + id).then((result) => {
-          this.updateData = result.data.data;
-          this.dialogEditVisible = true;
-        }).catch(() => {
-          this.$message.error("获取安排信息失败!")
-        })
-      },
-      update(){
-        const emptyReg = /^$/;
-        if(emptyReg.test(this.updateData.courseName)) {
-          this.$message.error("请选择课程!");
-          return;
-        }
-        else if(emptyReg.test(this.updateData.teacher)){
-          this.$message.error("请选择任课教师!")
-          return;
-        }
-        axios.put("/api/plan",this.updateData).then(() =>{
-          this.$message.success("保存成功!"),
-          this.dialogEditVisible = false,
           axios.get("/api/plan",{
             params:{
                 page:this.page,
@@ -251,94 +302,48 @@ export default {
           }).then((result) => {
             this.tableData = result.data.data.result;
           })
-          this.updateData = {
-            courseName:'',
-            teacher:''
-          }
-        }).catch(() => {
-          this.$message.error("编辑失败!")
         })
-        
-      },
-      cancel() {
-        if(this.dialogEditVisible == true) {
-          this.dialogEditVisible = false;
-          this.updateData={
-            courseName:'',
-            courseRoom:'',
-            teacher:''
-          }
-        }
-        else if(this.dialogAddVisible == true) {
-          this.dialogAddVisible = false;
-          this.saveData={
-            courseName:'',
-            courseRoom:'',
-            teacher:''
-          }
-        }
-      },
-      del(id){
-        this.$confirm('您确定要删除该班级吗?', '删除班级', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          axios.delete("/api/plan/" + id).then(() => {
-            this.$message({
-            type: 'success',
-            message: '删除成功!'
-            })
-            axios.get("/api/plan",{
-              params:{
-                  page:this.page,
-                  pageSize:this.pageSize
-                }
-            }).then((result) => {
-              this.tableData = result.data.data.result;
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-      }
-    },
-    mounted() {
-      if(localStorage.getItem('token') != null) {
-        axios.interceptors.request.use(config => {
-            // 在发送请求之前做些什么
-            config.headers['token'] = localStorage.getItem('token');
-            return config;
-          }, error => {
-            // 对请求错误做些什么
-            return Promise.reject(error);
-          });
-      }
-      axios.get("/api/plan",{
-        params:{
-            page:this.page,
-            pageSize:this.pageSize
-          }
-      }).then((result) => {
-        if(result.data.code == 0) this.$message.error("请登录后操作!");
-        else {
-          this.tableData = result.data.data.result;
-          this.total = result.data.data.total}
-      }),
-      axios.get("/api/emps/job",{
-        params:{
-          job:2
-        }
-      }).then((result) => {
-          this.teacherData=result.data.data;
-        }),
-        axios.get("/api/course/all").then((result) => {
-          this.courseData=result.data.data;
-        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     }
+  },
+  mounted() {
+    if(localStorage.getItem('token') != null) {
+      axios.interceptors.request.use(config => {
+          // 在发送请求之前做些什么
+          config.headers['token'] = localStorage.getItem('token');
+          return config;
+        }, error => {
+          // 对请求错误做些什么
+          return Promise.reject(error);
+        });
+    }
+    axios.get("/api/plan",{
+      params:{
+          page:this.page,
+          pageSize:this.pageSize
+        }
+    }).then((result) => {
+      if(result.data.code == 0) this.$message.error("请登录后操作!");
+      else {
+        this.tableData = result.data.data.result;
+        this.total = result.data.data.total}
+    }),
+    axios.get("/api/emps/job",{
+      params:{
+        job:2
+      }
+    }).then((result) => {
+        this.teacherData=result.data.data;
+      }),
+      axios.get("/api/course/all").then((result) => {
+        this.courseData=result.data.data;
+      })
+  }
   }
 </script>
     

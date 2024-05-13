@@ -127,7 +127,7 @@ export default {
     }
   },
   methods: {
-    handleSizeChange(val) {
+      handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.page = "1";
@@ -209,8 +209,17 @@ export default {
           this.$message.error("请选择结课时间!");
           return;
         }
+        else if (this.saveData.startTime > this.saveData.endTime) {
+          this.$message.error("开课时间不能晚于结课时间!");
+          return;
+        }
         axios.post("/api/course",this.saveData).then(() =>{
           this.$message.success("添加成功!");
+          this.saveData = {
+            courseName:'',
+            startTime:'',
+            endTime:''
+          },
           axios.get("/api/course",{
             params:{
                 page:this.page,
@@ -250,6 +259,10 @@ export default {
         }
         else if(emptyReg.test(this.updateData.endTime)){
           this.$message.error("请选择结课时间!");
+          return;
+        }
+        else if (this.saveData.startTime > this.saveData.endTime) {
+          this.$message.error("开课时间不能晚于结课时间!");
           return;
         }
         axios.put("/api/course",this.updateData).then(() =>{

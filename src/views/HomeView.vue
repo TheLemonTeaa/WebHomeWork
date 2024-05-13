@@ -28,7 +28,11 @@ export default {
                 token: localStorage.getItem('token')
             }
         }).then((result) => {
-          this.username = result.data.data.username;
+          if(result.data.code == 0){
+            this.$message.error("请登录后操作!");
+            this.$router.push('/login');
+          }
+          else this.username = result.data.data.username;
         })
     }
   }
