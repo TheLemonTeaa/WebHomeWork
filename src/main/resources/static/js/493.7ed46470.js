@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkproject"]=self["webpackChunkproject"]||[]).push([[493],{7493:function(n,u,e){e.r(u),e.d(u,{default:function(){return f}});var t=function(){var n=this,u=n._self._c;return u("div",[n._v("首页")])},r=[],l=e(1656),c={},s=(0,l.A)(c,t,r,!1,null,null,null),f=s.exports}}]);
+//# sourceMappingURL=493.7ed46470.js.map

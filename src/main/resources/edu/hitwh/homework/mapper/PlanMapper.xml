@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "edu.hitwh.homework.mapper.PlanMapper">
+    <select id="list" resultType="edu.hitwh.homework.pojo.Plan">
+        select * from plan
+        <where>
+            <if test="courseName != null and courseName != ''">
+                courseName like concat('%', #{courseName}, '%')
+            </if>
+            <if test="teacher != null and teacher != ''">
+                and teacher like concat('%', #{teacher}, '%')
+            </if>
+        </where>
+        order by courseName desc
+    </select>
+    <delete id="delete">
+        delete from plan where id = #{id}
+    </delete>
+    <insert id="save">
+        insert into plan (courseName, teacher, courseRoom) values (#{courseName}, #{teacher}, #{courseRoom})
+    </insert>
+    <select id="getById" resultType="edu.hitwh.homework.pojo.Plan">
+        select * from plan where id = #{id}
+    </select>
+    <update id="update">
+        update plan
+        <set>
+            <if test="courseName != null and courseName != ''">
+                courseName = #{courseName},
+            </if>
+            <if test="teacher != null and teacher != ''">
+                teacher = #{teacher},
+            </if>
+            <if test="courseRoom != null and courseRoom != ''">
+                courseRoom = #{courseRoom}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

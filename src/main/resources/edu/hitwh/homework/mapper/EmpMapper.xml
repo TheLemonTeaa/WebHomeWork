@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.hitwh.homework.mapper.EmpMapper">
+    <select id="getAllEmp" resultType="edu.hitwh.homework.pojo.Emp">
+        select * from emp where job = #{job}
+    </select>
+    <select id="list" resultType="edu.hitwh.homework.pojo.Emp">
+        select * from
+        emp
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%', #{name},'%')
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="begin != null and end != null">
+                and entrydate between #{begin} and #{end}
+            </if>
+                and id != 1
+        </where>
+        order by update_time desc
+    </select>
+    <delete id="delete">
+        delete from emp where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            <choose>
+                <when test="id != 1">
+                    #{id}
+                </when>
+            </choose>
+        </foreach>
+    </delete>
+    <insert id="save">
+        insert into emp (username, name, gender, image, job, entrydate, dept_id, create_time, update_time) values (#{username}, #{name}, #{gender}, #{image}, #{job}, #{entrydate}, #{dept_id}, #{create_time}, #{update_time})
+    </insert>
+    <select id="getById" resultType="edu.hitwh.homework.pojo.Emp">
+        select * from emp where id = #{id}
+    </select>
+    <update id="update">
+        update emp
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="name != null and name != ''">
+                gender = #{gender},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time},
+            </if>
+            <if test="entrydate != null and entrydate != ''">
+                entrydate = #{entrydate},
+            </if>
+            <if test="job != null and job != ''">
+                job = #{job},
+            </if>
+            <if test="dept_id != null and dept_id != ''">
+                dept_id = #{dept_id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getByUsernameAndPassword" resultType="edu.hitwh.homework.pojo.Emp">
+        select * from emp where username = #{username} and password = #{password}
+    </select>
+</mapper>

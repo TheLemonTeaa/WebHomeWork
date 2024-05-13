@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "edu.hitwh.homework.mapper.CourseMapper">
+    <select id="getAll" resultType="edu.hitwh.homework.pojo.Course">
+        select * from course order by courseName
+    </select>
+    <select id="list" resultType="edu.hitwh.homework.pojo.Course">
+        select * from course
+        <where>
+            <if test="courseName != null and courseName != ''">
+                courseName like concat('%', #{courseName}, '%')
+            </if>
+            <if test="begin != null and end != null">
+                and endTime between #{begin} and #{end}
+            </if>
+        </where>
+        order by startTime desc
+    </select>
+    <delete id="delete">
+        delete from course where id = #{id}
+    </delete>
+    <insert id="save">
+        insert into course (courseName, startTime, endTime) values (#{courseName}, #{startTime}, #{endTime})
+    </insert>
+    <select id="getById" resultType="edu.hitwh.homework.pojo.Course">
+        select * from course where id = #{id}
+    </select>
+    <update id="update">
+        update course
+        <set>
+            <if test="courseName != null and courseName != ''">
+                courseName = #{courseName},
+            </if>
+            <if test="startTime != null and startTime != ''">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null and endTime != ''">
+                endTime = #{endTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

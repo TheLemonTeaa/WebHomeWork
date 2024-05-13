@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "edu.hitwh.homework.mapper.ClsMapper">
+    <select id="getAllCls" resultType="edu.hitwh.homework.pojo.Cls">
+        select * from class order by className
+    </select>
+    <select id="list" resultType="edu.hitwh.homework.pojo.Cls">
+        select * from class
+        <where>
+            <if test="className != null and className != ''">
+                className like concat('%', #{className}, '%')
+            </if>
+            <if test="begin != null and end != null">
+                and endTime between #{begin} and #{end}
+            </if>
+        </where>
+        order by startTime desc
+    </select>
+    <delete id="delete">
+        delete from class where id = #{id}
+    </delete>
+    <insert id="save">
+        insert into class (className, classroom, startTime, endTime, teacher) values (#{className}, #{classroom}, #{startTime}, #{endTime}, #{teacher})
+    </insert>
+    <select id="getById" resultType="edu.hitwh.homework.pojo.Cls">
+        select * from class where id = #{id}
+    </select>
+    <update id="update">
+        update class
+        <set>
+            <if test="className != null and className != ''">
+                className = #{className},
+            </if>
+            <if test="classroom != null and classroom != ''">
+                classroom = #{classroom},
+            </if>
+            <if test="startTime != null and startTime != ''">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null and endTime != ''">
+                endTime = #{endTime},
+            </if>
+            <if test="teacher != null and teacher != ''">
+                teacher = #{teacher}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>
