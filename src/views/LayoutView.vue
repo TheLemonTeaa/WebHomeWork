@@ -2,6 +2,7 @@
   <div>
     <el-container>
         <el-header style="text-align: right; font-size: 12px;">
+          <img src="../assets/logo.svg" alt="Logo" style="position: absolute; left: 10px; top: -10px; height: 120px; width: auto;">
           <el-button @click="updatePassword()" icon="el-icon-edit" style="background-color: rgba(70, 76, 91, 1); color: #fff;">修改密码</el-button>
           <el-button @click="quit()" icon="el-icon-switch-button" style="background-color: rgba(70, 76, 91, 1); color: #fff;">退出登陆</el-button>
         </el-header>
